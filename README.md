@@ -4,12 +4,12 @@ ShadowsocksR-libev-full for OpenWrt
 简介  
 ---
 
- 本项目是 [ShadowsocksR-libev][1] 在 OpenWrt 上的完整移植，包括客户端和服务器端。   
- 当前版本: 2.5.6 (SSR:2670ab2)
+ 本项目是 [ShadowsocksR-libev][1] 在 OpenWrt 上的完整移植。  
+ 当前版本: 3.0.6 (SSR:5d82e13, support auth_chain_a)
  
  [预编译 OpenWrt Chaos Calmer ipk 下载][R]
 
- *** [详细介绍点这里][X] ***
+ *** [可供参考介绍点这里][X] ***
  
 特性  
 ---
@@ -19,21 +19,19 @@ ShadowsocksR-libev-full for OpenWrt
    > 集成 GFW List 的一键安装版客户端，安装后只要在luci界面填入服务器信息就能直接使用。  
    > 此版本已预置测试用的shadowsocks服务器，建议安装后直接访问 www.google.com.hk 检测配置是否成功。  
    
-   > 可执行文件 `ssr-{redir,tunnel,watchdog}`  
+   > 可执行文件 `ssr-{redir,local,tunnel,watchdog}`  
    > 默认启动:  
    > `ssr-redir` 提供透明代理  
+   > `ssr-local` 提供 SOCKS 代理  
    > `ssr-tunnel` 提供 UDP 转发, 用于 DNS 查询。  
-   > `ssr-watchdog` 守护进程，在主服务器不可用时自动切换到备用服务器。
+   > `ssr-watchdog` 守护进程，在主服务器不可用时自动切换到备用服务器。  
    
    > 安装方法：  
-     >> shadowsocksr-libev-gfwlist 使用openssl加密库 完整安装需要约 5.0M 空间  
-     >> shadowsocksr-libev-gfwlist-polarssl 使用polarssl加密库 完整安装需要约 3.5M 空间  
-     >> 以上两个包只要选一个安装，强烈建议在原版openwrt固件上安装。  
-     >> 用 winscp 把对应平台的 shadowsocksr-libev-gfwlist 的ipk文件上传到路由器 /tmp 目录  
+     >> 用 winscp 把对应平台的 shadowsocksr-gfwlist 的ipk文件上传到路由器 /tmp 目录  
      >> 带上--force-overwrite 选项运行 opkg install  
      >> ```bash  
      >> opkg update
-     >> opkg --force-overwrite install /tmp/shadowsocksr-libev-gfwlist*.ipk  
+     >> opkg --force-overwrite install /tmp/shadowsocksr-gfwlist*.ipk  
      >> ```  
      >> 安装结束时会提示一条错误信息，这是升级dnsmasq-full时的配置文件残留造成的，可以忽略。  
 
@@ -52,13 +50,13 @@ ShadowsocksR-libev-full for OpenWrt
    # 如果是 musl SDK (trunk 或 LEDE)
     ./scripts/feeds update base packages
     ./scripts/feeds install zlib libopenssl libpolarssl libmbedtls libpcre
-   rm -rf package/feeds/base/mbedtls/patches
+    rm -rf package/feeds/base/mbedtls/patches
    # 获取 shadowsocks-libev Makefile
-   git clone https://github.com/chenhw2/openwrt-shadowsocksR-libev-full.git package/feeds/shadowsocksR-libev-full
-   # 选择要编译的包 Network -> shadowsocksr-libev-*
+   git clone https://github.com/chenhw2/openwrt-shadowsocksR-libev-full.git package/feeds/shadowsocksr-gfwlist
+   # 选择要编译的包 Network -> shadowsocksr-gfwlist*
    make menuconfig
    # 开始编译
-   make package/feeds/shadowsocksR-libev-full/compile V=s
+   make package/feeds/shadowsocksr-gfwlist/compile V=s
    ```
 
 配置  
@@ -79,13 +77,13 @@ ShadowsocksR-libev-full for OpenWrt
    timeout        | 数值       | 超时时间（秒）, 默认 60
    fast_open      | 布尔值     | 是否启用 [TCP-Fast-Open][F], 只适用于 ss-local
    nofile         | 数值       | 设置 Linux ulimit
-   protocol       | 协议插件   | 客户端的协议插件，推荐使用[auth_sha1_v4, auth_aes128_md5, auth_aes128_sha1][P]
+   protocol       | 协议插件   | 客户端的协议插件，推荐使用[auth_aes128_md5, auth_aes128_sha1, auth_chain_a][P]
    obfs           | 混淆插件   | 客户端的混淆插件，推荐使用[plain, http_simple, http_post, tls1.2_ticket_auth][P]
 
 
 截图  
 ---
-
+![make](https://github.com/chenhw2/openwrt-shadowsocksR-libev-full/blob/master/snapshot/make.png)
 ![luci000](https://github.com/chenhw2/openwrt-shadowsocksR-libev-full/blob/master/snapshot/luci000.png)
 ![luci001](https://github.com/chenhw2/openwrt-shadowsocksR-libev-full/blob/master/snapshot/luci001.png)
 ![luci002](https://github.com/chenhw2/openwrt-shadowsocksR-libev-full/blob/master/snapshot/luci002.png)
