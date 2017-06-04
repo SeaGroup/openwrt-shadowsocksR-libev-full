@@ -32,6 +32,7 @@ Package/shadowsocksr-gfwlist =          $(call Package/shadowsocksr-gfwlist/Defa
 Package/shadowsocksr-gfwlist-mbedtls =  $(call Package/shadowsocksr-gfwlist/Default,mbedtls,(mbedTLS),+libmbedtls)
 Package/shadowsocksr-gfwlist-polarssl = $(call Package/shadowsocksr-gfwlist/Default,polarssl,(PolarSSL),+libpolarssl)
 
+
 define Package/shadowsocksr-gfwlist/description
 ShadowsocksR-libev is a lightweight secured socks5 proxy for embedded devices and low end boxes.
 endef
@@ -77,17 +78,6 @@ fi
 exit 0
 endef
 
-
-Package/shadowsocksr-gfwlist-mbedtls/description=$(Package/shadowsocksr-gfwlist/description)
-Package/shadowsocksr-gfwlist-mbedtls/conffiles = $(Package/shadowsocksr-gfwlist/conffiles)
-Package/shadowsocksr-gfwlist-mbedtls/postinst = $(Package/shadowsocksr-gfwlist/postinst)
-Package/shadowsocksr-gfwlist-mbedtls/postrm = $(Package/shadowsocksr-gfwlist/postrm)
-
-Package/shadowsocksr-gfwlist-polarssl/description=$(Package/shadowsocksr-gfwlist/description)
-Package/shadowsocksr-gfwlist-polarssl/conffiles = $(Package/shadowsocksr-gfwlist/conffiles)
-Package/shadowsocksr-gfwlist-polarssl/postinst = $(Package/shadowsocksr-gfwlist/postinst)
-Package/shadowsocksr-gfwlist-polarssl/postrm = $(Package/shadowsocksr-gfwlist/postrm)
-
 CONFIGURE_ARGS += --disable-ssp --disable-documentation --disable-assert
 
 ifeq ($(BUILD_VARIANT),mbedtls)
@@ -100,6 +90,7 @@ endif
 
 define Package/shadowsocksr-gfwlist/install
 	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) ./files/ssr-watchdog.sh $(1)/usr/bin/ssr-watchdog
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ss-redir $(1)/usr/bin/ssr-redir
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ss-local $(1)/usr/bin/ssr-local
 	$(LN) ssr-local $(1)/usr/bin/ssr-tunnel
@@ -114,8 +105,6 @@ define Package/shadowsocksr-gfwlist/install
 	$(INSTALL_DIR) $(1)/etc/dnsmasq.d
 	$(INSTALL_CONF) ./files/gfw_list.conf $(1)/etc/dnsmasq.d/gfw_list.conf
 	$(INSTALL_CONF) ./files/custom_list.conf $(1)/etc/dnsmasq.d/custom_list.conf
-	$(INSTALL_DIR) $(1)/root
-	$(INSTALL_BIN) ./files/ssr-watchdog.sh $(1)/root/ssr-watchdog
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
 	$(INSTALL_CONF) ./files/shadowsocksr-libev.lua $(1)/usr/lib/lua/luci/controller/shadowsocksr-libev.lua
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/shadowsocksr-libev
@@ -127,8 +116,17 @@ define Package/shadowsocksr-gfwlist/install
 	$(INSTALL_CONF) ./files/watchdogr.htm $(1)/usr/lib/lua/luci/view/shadowsocksr-libev/watchdogr.htm
 endef
 
-Package/shadowsocksr-gfwlist-polarssl/install = $(Package/shadowsocksr-gfwlist/install)
+Package/shadowsocksr-gfwlist-mbedtls/description=$(Package/shadowsocksr-gfwlist/description)
+Package/shadowsocksr-gfwlist-mbedtls/conffiles = $(Package/shadowsocksr-gfwlist/conffiles)
+Package/shadowsocksr-gfwlist-mbedtls/postinst = $(Package/shadowsocksr-gfwlist/postinst)
+Package/shadowsocksr-gfwlist-mbedtls/postrm = $(Package/shadowsocksr-gfwlist/postrm)
 Package/shadowsocksr-gfwlist-mbedtls/install = $(Package/shadowsocksr-gfwlist/install)
+
+Package/shadowsocksr-gfwlist-polarssl/description=$(Package/shadowsocksr-gfwlist/description)
+Package/shadowsocksr-gfwlist-polarssl/conffiles = $(Package/shadowsocksr-gfwlist/conffiles)
+Package/shadowsocksr-gfwlist-polarssl/postinst = $(Package/shadowsocksr-gfwlist/postinst)
+Package/shadowsocksr-gfwlist-polarssl/postrm = $(Package/shadowsocksr-gfwlist/postrm)
+Package/shadowsocksr-gfwlist-polarssl/install = $(Package/shadowsocksr-gfwlist/install)
 
 $(eval $(call BuildPackage,shadowsocksr-gfwlist))
 $(eval $(call BuildPackage,shadowsocksr-gfwlist-mbedtls))
