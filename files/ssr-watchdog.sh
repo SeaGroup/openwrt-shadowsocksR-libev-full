@@ -19,18 +19,18 @@ if [ "$CURRENT" == "backup" ]; then
 	fi
 fi
 
-wget --spider --quiet -T 3 www.gstatic.com/generate_204
+wget -s -q -T3 ssl.gstatic.com/generate_204
 if [ "$?" == "0" ]; then
 	echo "[$LOGTIME] No problem."
 	exit 0
 else
-	wget --spider --quiet -T 3 www.baidu.com
+	wget -s -q -T3 t.cn
 	if [ "$?" == "0" ]; then
 		echo "[$LOGTIME] Problem decteted, restart ShadowsocksR."
 		/etc/init.d/shadowsocksr restart
 		if [ "$CURRENT" == "main" ]; then
 			sleep 3
-			wget --spider --quiet -T 3 www.gstatic.com/generate_204
+			wget -s -q -T3 ssl.gstatic.com/generate_204
 			if [ "$?" == "0" ]; then
 				echo "[$LOGTIME] ShadowsocksR recovered."
 				exit 0

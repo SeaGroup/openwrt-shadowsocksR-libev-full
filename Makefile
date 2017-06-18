@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=shadowsocksr-gfwlist
 PKG_VERSION:=3.0.6
-PKG_RELEASE:=5d82e139e5fd048116eb018c169db4d1fbf93290
+PKG_RELEASE:=f713aa981169d35ff9483b295d1209c35117d70c
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE).tar.gz
@@ -67,8 +67,8 @@ if [ -z "$${IPKG_INSTROOT}" ]; then
 	rm -f /etc/dnsmasq.d/custom_list.conf
 	/etc/init.d/dnsmasq restart
 
-	mv -f /etc/firewall.user.bak /etc/firewall.user
-	rm -f /etc/firewall.user.ssr
+	uci -q delete firewall.shadowsocksr
+	uci commit firewall
 	/etc/init.d/firewall restart
 
 	sed -i '/shadowsocksr_watchdog/d' /etc/crontabs/root
@@ -100,7 +100,7 @@ define Package/shadowsocksr-gfwlist/install
 	$(INSTALL_BIN) ./files/shadowsocksr-gfwlist.init $(1)/etc/init.d/shadowsocksr
 	$(INSTALL_CONF) ./files/shadowsocksr-gfwlist.json $(1)/etc/shadowsocksr.json.main
 	$(INSTALL_CONF) ./files/shadowsocksr-gfwlist.json $(1)/etc/shadowsocksr.json.backup
-	$(INSTALL_CONF) ./files/firewall.user $(1)/etc/firewall.user.ssr
+	$(INSTALL_CONF) ./files/firewall.include $(1)/etc/shadowsocksr.include
 	$(INSTALL_CONF) ./files/dnsmasq.conf $(1)/etc/dnsmasq.conf.ssr
 	$(INSTALL_DIR) $(1)/etc/dnsmasq.d
 	$(INSTALL_CONF) ./files/gfw_list.conf $(1)/etc/dnsmasq.d/gfw_list.conf
